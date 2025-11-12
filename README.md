@@ -1,4 +1,4 @@
-# ☕ Moccha Codespace
+# ☕ Mocha Codespace
 
 A cozy, beginner-friendly IDE with a warm mocha aesthetic. Built with PyQt6/PySide6 and designed for developers who want a pleasant coding environment without overwhelming complexity.
 
@@ -163,7 +163,7 @@ pyinstaller --onefile --name "moccha-codespace" \
 
 ### 🐳 Docker Support (Optional)
 
-Run Moccha Codespace in a container with all language support:
+Run Mocha Codespace in a container with all language support:
 
 ```dockerfile
 FROM python:3.11-slim
@@ -189,9 +189,9 @@ CMD ["python", "moccha_codespace.py"]
 
 ### Basic Workflow
 
-1. **Start Moccha Codespace**
+1. **Start Mocha Codespace**
    ```bash
-   python moccha_codespace.py
+   python main.py
    ```
 
 2. **Create or Open a File**
