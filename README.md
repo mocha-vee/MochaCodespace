@@ -389,12 +389,7 @@ black moccha_codespace.py
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 👩‍💻 Author
-
-**Vee Rose**
-- Crafted with ♥️ and lots of ☕
+This project is licensed under the GNU GPL v3.0 License - see the [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
@@ -402,12 +397,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Pygments**: Syntax highlighting library
 - **JetBrains**: For the beautiful JetBrains Mono font
 - **Community**: For feedback and contributions
-
-## 📮 Support
-
-- **Issues**: [GitHub Issues](https://github.com/yourusername/moccha-codespace/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/moccha-codespace/discussions)
-- **Email**: support@example.com
 
 ## 🗺️ Roadmap
 
@@ -431,9 +420,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ### Code Execution
 ![Running Code](screenshots/execution.png)
-
----
-
-**Enjoy coding in a cozy environment! ☕✨**
-
-Made with Python, Qt, and a love for beautiful developer tools.
