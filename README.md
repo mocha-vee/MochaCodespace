@@ -15,7 +15,7 @@ A cozy, beginner-friendly IDE with a warm mocha aesthetic. Built with PyQt6/PySi
 - Smooth, rounded UI elements
 
 ### 🔤 Multi-Language Support
-Moccha Codespace supports **12+ programming languages** out of the box:
+Mocha Codespace supports **12+ programming languages** out of the box:
 
 | Language | File Extension | Execution Method |
 |----------|----------------|------------------|
@@ -89,18 +89,10 @@ Moccha Codespace supports **12+ programming languages** out of the box:
 
 ### Installation
 
-#### Option 1: Install from PyPI (Coming Soon)
-```bash
-pip install moccha-codespace
-moccha-codespace
-```
-
-#### Option 2: Install from Source
-
 1. **Clone the repository**
 ```bash
-git clone https://github.com/yourusername/moccha-codespace.git
-cd moccha-codespace
+git clone https://github.com/vanilla-deve/MochaCodespace/tree/main
+cd mocha-codespace
 ```
 
 2. **Install dependencies**
@@ -117,12 +109,12 @@ pip install PySide6 pygments
 
 3. **Run the application**
 ```bash
-python moccha_codespace.py
+python main.py
 ```
 
 ### 📦 Creating a Standalone Executable
 
-You can compile Moccha Codespace into a standalone executable using PyInstaller:
+You can compile Mocha Codespace into a standalone executable using PyInstaller:
 
 #### Windows
 ```bash
@@ -130,35 +122,35 @@ You can compile Moccha Codespace into a standalone executable using PyInstaller:
 pip install pyinstaller
 
 # Create executable
-pyinstaller --onefile --windowed --name "MocchaCodespace" \
+pyinstaller --onefile --windowed --name "MochaCodespace" \
     --icon=icon.ico \
     --add-data "README.md:." \
-    moccha_codespace.py
+    main.py
 
-# Executable will be in dist/MocchaCodespace.exe
+# Executable will be in dist/MochaCodespace.exe
 ```
 
 #### macOS
 ```bash
 pip install pyinstaller
 
-pyinstaller --onefile --windowed --name "MocchaCodespace" \
+pyinstaller --onefile --windowed --name "MochaCodespace" \
     --icon=icon.icns \
     --add-data "README.md:." \
-    moccha_codespace.py
+    main.py
 
-# App bundle will be in dist/MocchaCodespace.app
+# App bundle will be in dist/MochaCodespace.app
 ```
 
 #### Linux
 ```bash
 pip install pyinstaller
 
-pyinstaller --onefile --name "moccha-codespace" \
+pyinstaller --onefile --name "mocha-codespace" \
     --add-data "README.md:." \
-    moccha_codespace.py
+    main.py
 
-# Executable will be in dist/moccha-codespace
+# Executable will be in dist/mocha-codespace
 ```
 
 ### 🐳 Docker Support (Optional)
@@ -179,10 +171,10 @@ RUN apt-get update && apt-get install -y \
 RUN pip install PyQt6 pygments
 
 # Copy application
-COPY moccha_codespace.py /app/
+COPY mocha_codespace.py /app/
 WORKDIR /app
 
-CMD ["python", "moccha_codespace.py"]
+CMD ["python", "mocha_codespace.py"]
 ```
 
 ## 📖 How to Use
@@ -259,19 +251,19 @@ CMD ["python", "moccha_codespace.py"]
 
 ```
 ┌─────────────────────────────────────┐
-│     MocchaCodespace (QMainWindow)   │
-│  ┌─────────────────────────────┐   │
-│  │   Toolbar & Menu Bar         │   │
-│  ├─────────────┬───────────────┤   │
-│  │             │               │   │
-│  │  Workspace  │  Tab Widget   │   │
-│  │  Tree       │  ┌─────────┐  │   │
-│  │  (Optional) │  │ Editor  │  │   │
-│  │             │  │  Tabs   │  │   │
-│  │             │  └─────────┘  │   │
-│  │             ├───────────────┤   │
-│  │             │  Console      │   │
-│  └─────────────┴───────────────┘   │
+│     MochaCodespace (QMainWindow)    │
+│  ┌─────────────────────────────┐    │
+│  │   Toolbar & Menu Bar        │    │
+│  ├─────────────┬───────────────┤    │
+│  │             │               │    │
+│  │  Workspace  │  Tab Widget   │    │
+│  │  Tree       │  ┌─────────┐  │    │
+│  │  (Optional) │  │ Editor  │  │    │
+│  │             │  │  Tabs   │  │    │
+│  │             │  └─────────┘  │    │
+│  │             ├───────────────┤    │
+│  │             │  Console      │    │
+│  └─────────────┴───────────────┘    │
 └─────────────────────────────────────┘
 ```
 
@@ -292,7 +284,7 @@ CMD ["python", "moccha_codespace.py"]
    - Prevents UI freezing during execution
    - Captures stdout/stderr for console display
 
-4. **MocchaCodespace (QMainWindow)**
+4. **MochaCodespace (QMainWindow)**
    - Main application window
    - Coordinates all components
    - Manages menus, toolbar, and workspace
@@ -312,7 +304,7 @@ CMD ["python", "moccha_codespace.py"]
 
 ### Syntax Highlighting
 
-If Pygments is installed, Moccha uses it for advanced syntax highlighting:
+If Pygments is installed, Mocha uses it for advanced syntax highlighting:
 - Token-based parsing
 - Language-specific lexers
 - Custom color mapping to Mocha theme
@@ -364,14 +356,14 @@ Contributions are welcome! Here's how you can help:
 2. **Suggest Features**: Share your ideas in issues
 3. **Submit Pull Requests**: Fork, code, and PR
 4. **Improve Documentation**: Help others understand
-5. **Share**: Tell others about Moccha Codespace
+5. **Share**: Tell others about Mocha Codespace
 
 ### Development Setup
 
 ```bash
 # Clone repo
-git clone https://github.com/yourusername/moccha-codespace.git
-cd moccha-codespace
+git clone https://github.com/vanilla-deve/MochaCodespace/tree/main
+cd mocha-codespace
 
 # Create virtual environment
 python -m venv venv
@@ -384,7 +376,7 @@ pip install PyQt6 pygments black flake8 pytest
 pytest tests/
 
 # Format code
-black moccha_codespace.py
+black main.py
 ```
 
 ## 📄 License
