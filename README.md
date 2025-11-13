@@ -85,12 +85,14 @@ Mocha Codespace supports **12+ programming languages** out of the box:
 - Lua: Lua interpreter
 - Nix: Nix package manager
 
-### Installation
+### Installation Using Git
+
+#### Interpreting From Source
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/vanilla-deve/MochaCodespace/tree/main
-cd mocha-codespace
+git clone https://github.com/vanilla-deve/MochaCodespace.git
+cd MochaCodespace
 ```
 
 2. **Install dependencies**
@@ -110,7 +112,7 @@ pip install PySide6 pygments
 python main.py
 ```
 
-### 📦 Creating a Standalone Executable
+#### 📦 Creating a Standalone Executable
 
 You can compile Mocha Codespace into a standalone executable using PyInstaller:
 
@@ -183,6 +185,7 @@ CMD ["python", "mocha_codespace.py"]
    ```bash
    python main.py
    ```
+   > If you created an executable, just run it!
 
 2. **Create or Open a File**
    - Click "📄 New" to create a new file
@@ -360,8 +363,8 @@ Contributions are welcome! Here's how you can help:
 
 ```bash
 # Clone repo
-git clone https://github.com/vanilla-deve/MochaCodespace/tree/main
-cd mocha-codespace
+git clone https://github.com/vanilla-deve/MochaCodespace.git
+cd MochaCodespace
 
 # Create virtual environment
 python -m venv venv
