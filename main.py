@@ -4,6 +4,7 @@ import subprocess
 import tempfile
 import threading
 import webbrowser
+import re
 from pathlib import Path
 
 # Try PyQt6 first, fallback to PySide6
@@ -12,34 +13,25 @@ try:
         QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
         QTextEdit, QPlainTextEdit, QPushButton, QLabel, QComboBox,
         QFileDialog, QMessageBox, QInputDialog, QSplitter, QTreeWidget,
-        QTreeWidgetItem, QTabWidget, QToolBar, QStatusBar, QMenuBar, QMenu
+        QTreeWidgetItem, QTabWidget, QToolBar, QStatusBar, QMenuBar, QMenu,
+        QCompleter, QListWidget
     )
-    from PyQt6.QtCore import Qt, QTimer, pyqtSignal as Signal, QThread
-    from PyQt6.QtGui import QFont, QTextCharFormat, QColor, QTextCursor, QKeySequence, QAction
+    from PyQt6.QtCore import Qt, QTimer, pyqtSignal as Signal, QThread, QStringListModel, QRect
+    from PyQt6.QtGui import (QFont, QTextCharFormat, QColor, QTextCursor, QKeySequence, 
+                             QAction, QSyntaxHighlighter, QPalette)
     USING_PYQT = True
 except ImportError:
     from PySide6.QtWidgets import (
         QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
         QTextEdit, QPlainTextEdit, QPushButton, QLabel, QComboBox,
         QFileDialog, QMessageBox, QInputDialog, QSplitter, QTreeWidget,
-        QTreeWidgetItem, QTabWidget, QToolBar, QStatusBar, QMenuBar, QMenu
+        QTreeWidgetItem, QTabWidget, QToolBar, QStatusBar, QMenuBar, QMenu,
+        QCompleter, QListWidget
     )
-    from PySide6.QtCore import Qt, QTimer, Signal, QThread
-    from PySide6.QtGui import QFont, QTextCharFormat, QColor, QTextCursor, QKeySequence, QAction
+    from PySide6.QtCore import Qt, QTimer, Signal, QThread, QStringListModel, QRect
+    from PySide6.QtGui import (QFont, QTextCharFormat, QColor, QTextCursor, QKeySequence,
+                               QAction, QSyntaxHighlighter, QPalette)
     USING_PYQT = False
-
-# Try to import Pygments for syntax highlighting
-try:
-    from pygments import lex
-    from pygments.lexers import (
-        PythonLexer, CLexer, CppLexer, HtmlLexer, CssLexer, JavascriptLexer,
-        RustLexer, JavaLexer, LuaLexer, TypeScriptLexer, GoLexer, 
-        CSharpLexer, RubyLexer, KotlinLexer, NixLexer
-    )
-    from pygments.token import Token
-    USE_PYGMENTS = True
-except ImportError:
-    USE_PYGMENTS = False
 
 
 # Language configurations
@@ -134,6 +126,106 @@ LANG_CONFIG = {
         "comment": "# ",
         "runner": "nix"
     }
+}
+
+# Keywords and autocomplete suggestions for each language
+LANGUAGE_KEYWORDS = {
+    "Python": [
+        "and", "as", "assert", "async", "await", "break", "class", "continue",
+        "def", "del", "elif", "else", "except", "False", "finally", "for",
+        "from", "global", "if", "import", "in", "is", "lambda", "None",
+        "nonlocal", "not", "or", "pass", "raise", "return", "True", "try",
+        "while", "with", "yield", "print", "len", "range", "str", "int",
+        "float", "list", "dict", "set", "tuple", "open", "self", "__init__"
+    ],
+    "Java": [
+        "abstract", "assert", "boolean", "break", "byte", "case", "catch",
+        "char", "class", "const", "continue", "default", "do", "double",
+        "else", "enum", "extends", "final", "finally", "float", "for",
+        "if", "implements", "import", "instanceof", "int", "interface",
+        "long", "native", "new", "package", "private", "protected", "public",
+        "return", "short", "static", "strictfp", "super", "switch", "synchronized",
+        "this", "throw", "throws", "transient", "try", "void", "volatile", "while",
+        "String", "System", "out", "println", "main", "args"
+    ],
+    "C": [
+        "auto", "break", "case", "char", "const", "continue", "default", "do",
+        "double", "else", "enum", "extern", "float", "for", "goto", "if",
+        "int", "long", "register", "return", "short", "signed", "sizeof",
+        "static", "struct", "switch", "typedef", "union", "unsigned", "void",
+        "volatile", "while", "printf", "scanf", "malloc", "free", "NULL",
+        "include", "define", "stdio", "stdlib", "string"
+    ],
+    "C++": [
+        "alignas", "alignof", "and", "and_eq", "asm", "auto", "bitand", "bitor",
+        "bool", "break", "case", "catch", "char", "class", "const", "constexpr",
+        "continue", "decltype", "default", "delete", "do", "double", "dynamic_cast",
+        "else", "enum", "explicit", "export", "extern", "false", "float", "for",
+        "friend", "goto", "if", "inline", "int", "long", "mutable", "namespace",
+        "new", "noexcept", "not", "nullptr", "operator", "or", "private", "protected",
+        "public", "return", "short", "signed", "sizeof", "static", "struct", "switch",
+        "template", "this", "throw", "true", "try", "typedef", "typeid", "typename",
+        "union", "unsigned", "using", "virtual", "void", "volatile", "while",
+        "cout", "cin", "endl", "string", "vector", "iostream", "std"
+    ],
+    "JavaScript": [
+        "async", "await", "break", "case", "catch", "class", "const", "continue",
+        "debugger", "default", "delete", "do", "else", "export", "extends", "false",
+        "finally", "for", "function", "if", "import", "in", "instanceof", "let",
+        "new", "null", "return", "super", "switch", "this", "throw", "true",
+        "try", "typeof", "var", "void", "while", "with", "yield",
+        "console", "log", "document", "window", "Array", "Object", "String",
+        "Number", "Boolean", "Math", "Date", "JSON", "Promise", "setTimeout"
+    ],
+    "TypeScript": [
+        "abstract", "any", "as", "async", "await", "boolean", "break", "case",
+        "catch", "class", "const", "continue", "debugger", "declare", "default",
+        "delete", "do", "else", "enum", "export", "extends", "false", "finally",
+        "for", "from", "function", "if", "implements", "import", "in", "instanceof",
+        "interface", "is", "keyof", "let", "module", "namespace", "never", "new",
+        "null", "number", "of", "package", "private", "protected", "public",
+        "readonly", "require", "return", "static", "string", "super", "switch",
+        "symbol", "this", "throw", "true", "try", "type", "typeof", "undefined",
+        "unique", "unknown", "var", "void", "while", "with", "yield"
+    ],
+    "Rust": [
+        "as", "async", "await", "break", "const", "continue", "crate", "dyn",
+        "else", "enum", "extern", "false", "fn", "for", "if", "impl", "in",
+        "let", "loop", "match", "mod", "move", "mut", "pub", "ref", "return",
+        "self", "Self", "static", "struct", "super", "trait", "true", "type",
+        "unsafe", "use", "where", "while", "String", "Vec", "Option", "Result",
+        "println", "print", "format", "panic", "unwrap", "expect"
+    ],
+    "Go": [
+        "break", "case", "chan", "const", "continue", "default", "defer", "else",
+        "fallthrough", "for", "func", "go", "goto", "if", "import", "interface",
+        "map", "package", "range", "return", "select", "struct", "switch", "type",
+        "var", "fmt", "Println", "Printf", "Sprintf", "main", "string", "int",
+        "bool", "float64", "error", "nil", "true", "false", "make", "len", "append"
+    ],
+    "Ruby": [
+        "alias", "and", "begin", "break", "case", "class", "def", "defined",
+        "do", "else", "elsif", "end", "ensure", "false", "for", "if", "in",
+        "module", "next", "nil", "not", "or", "redo", "rescue", "retry",
+        "return", "self", "super", "then", "true", "undef", "unless", "until",
+        "when", "while", "yield", "puts", "print", "gets", "attr_accessor",
+        "attr_reader", "attr_writer", "initialize", "new", "require"
+    ],
+    "HTML": [
+        "html", "head", "title", "body", "div", "span", "p", "a", "img",
+        "ul", "ol", "li", "table", "tr", "td", "th", "form", "input",
+        "button", "select", "option", "textarea", "label", "h1", "h2",
+        "h3", "h4", "h5", "h6", "header", "footer", "nav", "section",
+        "article", "aside", "main", "script", "style", "link", "meta",
+        "br", "hr", "strong", "em", "code", "pre"
+    ],
+    "CSS": [
+        "color", "background", "background-color", "font-family", "font-size",
+        "font-weight", "margin", "padding", "border", "width", "height",
+        "display", "position", "top", "left", "right", "bottom", "flex",
+        "grid", "justify-content", "align-items", "text-align", "cursor",
+        "transition", "transform", "opacity", "z-index", "overflow", "box-shadow"
+    ]
 }
 
 # Sample code templates
@@ -454,6 +546,85 @@ pkgs.mkShell {
 }
 
 
+class SyntaxHighlighter(QSyntaxHighlighter):
+    """Syntax highlighter for multiple languages"""
+    
+    def __init__(self, parent, language="Python"):
+        super().__init__(parent)
+        self.language = language
+        self.setup_rules()
+        
+    def setup_rules(self):
+        """Setup highlighting rules based on language"""
+        self.rules = []
+        
+        # Mocha theme colors
+        keyword_color = QColor("#8b4513")      # Saddle brown
+        string_color = QColor("#6b8e23")       # Olive drab
+        comment_color = QColor("#a0826d")      # Light brown
+        number_color = QColor("#cd853f")       # Peru
+        function_color = QColor("#704241")     # Dark mocha
+        
+        # Keyword format
+        keyword_format = QTextCharFormat()
+        keyword_format.setForeground(keyword_color)
+        keyword_format.setFontWeight(QFont.Weight.Bold)
+        
+        # Get keywords for language
+        keywords = LANGUAGE_KEYWORDS.get(self.language, [])
+        for word in keywords:
+            pattern = f"\\b{word}\\b"
+            self.rules.append((re.compile(pattern), keyword_format))
+        
+        # String format (single and double quotes)
+        string_format = QTextCharFormat()
+        string_format.setForeground(string_color)
+        self.rules.append((re.compile(r'"[^"\\]*(\\.[^"\\]*)*"'), string_format))
+        self.rules.append((re.compile(r"'[^'\\]*(\\.[^'\\]*)*'"), string_format))
+        
+        # Number format
+        number_format = QTextCharFormat()
+        number_format.setForeground(number_color)
+        self.rules.append((re.compile(r'\b\d+\.?\d*\b'), number_format))
+        
+        # Function/method format
+        function_format = QTextCharFormat()
+        function_format.setForeground(function_color)
+        function_format.setFontItalic(True)
+        self.rules.append((re.compile(r'\b[A-Za-z_][A-Za-z0-9_]*(?=\()'), function_format))
+        
+        # Comment format (language-specific)
+        comment_format = QTextCharFormat()
+        comment_format.setForeground(comment_color)
+        comment_format.setFontItalic(True)
+        
+        if self.language in ["Python", "Ruby", "Nix"]:
+            self.rules.append((re.compile(r'#[^\n]*'), comment_format))
+        elif self.language == "Lua":
+            self.rules.append((re.compile(r'--[^\n]*'), comment_format))
+        elif self.language in ["C", "C++", "Java", "JavaScript", "TypeScript", "Rust", "Go", "C#", "Kotlin"]:
+            self.rules.append((re.compile(r'//[^\n]*'), comment_format))
+            self.rules.append((re.compile(r'/\*.*?\*/', re.DOTALL), comment_format))
+        elif self.language == "HTML":
+            self.rules.append((re.compile(r'<!--.*?-->', re.DOTALL), comment_format))
+        elif self.language == "CSS":
+            self.rules.append((re.compile(r'/\*.*?\*/', re.DOTALL), comment_format))
+    
+    def highlightBlock(self, text):
+        """Apply syntax highlighting to a block of text"""
+        for pattern, format_style in self.rules:
+            for match in pattern.finditer(text):
+                start = match.start()
+                length = match.end() - start
+                self.setFormat(start, length, format_style)
+    
+    def set_language(self, language):
+        """Change the highlighting language"""
+        self.language = language
+        self.setup_rules()
+        self.rehighlight()
+
+
 class RunnerThread(QThread):
     """Thread for running code without blocking UI"""
     output = Signal(str)
@@ -490,11 +661,14 @@ class RunnerThread(QThread):
 
 
 class CodeEditor(QPlainTextEdit):
-    """Enhanced code editor with syntax highlighting"""
+    """Enhanced code editor with syntax highlighting and autocompletion"""
     
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, language="Python"):
         super().__init__(parent)
+        self.language = language
         self.setup_editor()
+        self.setup_autocomplete()
+        self.highlighter = SyntaxHighlighter(self.document(), language)
         
     def setup_editor(self):
         # Set JetBrains Mono font (fallback to other monospace fonts)
@@ -519,8 +693,71 @@ class CodeEditor(QPlainTextEdit):
         
         # Tab settings
         self.setTabStopDistance(self.fontMetrics().horizontalAdvance(' ') * 4)
+    
+    def setup_autocomplete(self):
+        """Setup autocompletion"""
+        self.completer = QCompleter()
+        self.completer.setWidget(self)
+        self.completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
+        self.completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
         
+        # Style the completer popup
+        self.completer.popup().setStyleSheet("""
+            QListView {
+                background-color: #f5ebe0;
+                color: #704241;
+                border: 2px solid #d5bdaf;
+                border-radius: 6px;
+                padding: 4px;
+                font-family: 'JetBrains Mono', 'Consolas', monospace;
+                selection-background-color: #e3d5ca;
+            }
+            QListView::item {
+                padding: 6px;
+                border-radius: 4px;
+            }
+            QListView::item:selected {
+                background-color: #d5bdaf;
+            }
+        """)
+        
+        self.completer.activated.connect(self.insert_completion)
+        self.update_completer_model()
+    
+    def update_completer_model(self):
+        """Update completer with keywords for current language"""
+        keywords = LANGUAGE_KEYWORDS.get(self.language, [])
+        # Add words from current document
+        text = self.toPlainText()
+        words = set(re.findall(r'\b[A-Za-z_][A-Za-z0-9_]{2,}\b', text))
+        all_completions = sorted(set(keywords) | words)
+        
+        model = QStringListModel(all_completions)
+        self.completer.setModel(model)
+    
+    def insert_completion(self, completion):
+        """Insert the selected completion"""
+        cursor = self.textCursor()
+        extra = len(completion) - len(self.completer.completionPrefix())
+        cursor.movePosition(QTextCursor.MoveOperation.Left)
+        cursor.movePosition(QTextCursor.MoveOperation.EndOfWord)
+        cursor.insertText(completion[-extra:])
+        self.setTextCursor(cursor)
+    
+    def text_under_cursor(self):
+        """Get the word under cursor for autocompletion"""
+        cursor = self.textCursor()
+        cursor.select(QTextCursor.SelectionType.WordUnderCursor)
+        return cursor.selectedText()
+    
     def keyPressEvent(self, event):
+        # Handle completer shortcuts
+        if self.completer.popup().isVisible():
+            if event.key() in (Qt.Key.Key_Enter, Qt.Key.Key_Return, Qt.Key.Key_Escape, 
+                               Qt.Key.Key_Tab, Qt.Key.Key_Backtab):
+                event.ignore()
+                return
+        
         # Auto-indent on Enter
         if event.key() == Qt.Key.Key_Return:
             cursor = self.textCursor()
@@ -532,7 +769,7 @@ class CodeEditor(QPlainTextEdit):
             
             # Check if line ends with opening brace/colon
             stripped = text.rstrip()
-            if stripped.endswith((':',  '{', '(')):
+            if stripped.endswith((':', '{', '(')):
                 indent += 4
                 
             super().keyPressEvent(event)
@@ -543,8 +780,37 @@ class CodeEditor(QPlainTextEdit):
         elif event.key() == Qt.Key.Key_Tab:
             self.insertPlainText(' ' * 4)
             return
-            
+        
+        # Handle normal key press
         super().keyPressEvent(event)
+        
+        # Show completer on Ctrl+Space or after typing
+        completion_prefix = self.text_under_cursor()
+        
+        if event.key() == Qt.Key.Key_Space and event.modifiers() == Qt.KeyboardModifier.ControlModifier:
+            # Force show completer
+            self.update_completer_model()
+            self.completer.setCompletionPrefix("")
+            rect = self.cursorRect()
+            rect.setWidth(self.completer.popup().sizeHintForColumn(0) + 
+                         self.completer.popup().verticalScrollBar().sizeHint().width())
+            self.completer.complete(rect)
+        elif len(completion_prefix) >= 2 and event.text().isalnum():
+            # Auto-show completer after 2 characters
+            self.update_completer_model()
+            self.completer.setCompletionPrefix(completion_prefix)
+            
+            if self.completer.completionCount() > 0:
+                rect = self.cursorRect()
+                rect.setWidth(self.completer.popup().sizeHintForColumn(0) + 
+                             self.completer.popup().verticalScrollBar().sizeHint().width())
+                self.completer.complete(rect)
+    
+    def set_language(self, language):
+        """Change the editor language"""
+        self.language = language
+        self.highlighter.set_language(language)
+        self.update_completer_model()
 
 
 class EditorTab(QWidget):
@@ -562,7 +828,7 @@ class EditorTab(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         
         # Editor
-        self.editor = CodeEditor()
+        self.editor = CodeEditor(language=self.language)
         layout.addWidget(self.editor)
         
     def load_content(self):
@@ -618,9 +884,6 @@ class MochaCodespace(QMainWindow):
         # Create initial tab
         self.new_file()
         
-        if not USE_PYGMENTS:
-            self.console.append("Note: Pygments not installed. Install with: pip install pygments\n")
-            
     def setup_ui(self):
         # Apply Mocha color scheme to main window
         self.setStyleSheet("""
@@ -917,6 +1180,8 @@ class MochaCodespace(QMainWindow):
         toolbar.addAction("❌ Close Workspace", self.close_workspace)
         
     def create_statusbar(self):
+        status_label = QLabel("✨ Welcome to Version 0.2!")
+        self.statusBar().addPermanentWidget(status_label)
         self.statusBar().showMessage("Ready")
         
     def setup_shortcuts(self):
@@ -1013,6 +1278,7 @@ class MochaCodespace(QMainWindow):
         tab = self.get_current_tab()
         if tab and not tab.filepath:
             tab.language = language
+            tab.editor.set_language(language)
             tab.load_content()
             
     def undo(self):
@@ -1330,8 +1596,15 @@ class MochaCodespace(QMainWindow):
         QMessageBox.about(
             self,
             "About Mocha Codespace",
-            """<h2>Mocha Codespace 0.1</h2>
+            """<h2>Mocha Codespace 0.2</h2>
             <p>A modern, beginner-friendly IDE built with PyQt6/PySide6</p>
+            <p><b>Features:</b></p>
+            <ul>
+                <li>✨ Syntax highlighting for all supported languages</li>
+                <li>🔤 Smart autocompletion (Ctrl+Space)</li>
+                <li>📝 Auto-indentation</li>
+                <li>🎨 Beautiful Mocha color theme</li>
+            </ul>
             <p><b>Supported Languages:</b></p>
             <ul>
                 <li>Python</li>
