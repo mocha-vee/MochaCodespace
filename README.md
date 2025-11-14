@@ -395,13 +395,13 @@ This project is licensed under the GNU GPL v3.0 License - see the [LICENSE](LICE
 
 - [ ] Plugin system for extensions
 - [ ] Git integration
-- [ ] Code snippets library
+- [x] Code snippets library
 - [ ] Themes switcher (Dark Mocha, Light Mocha, etc.)
 - [ ] Integrated terminal
 - [ ] Debugger support
-- [ ] Auto-completion (LSP integration)
+- [x] Auto-completion (LSP integration)
 - [ ] Project templates
-- [ ] Export to various formats
+- [x] Export to various formats
 
 ## 📸 Screenshots
 
