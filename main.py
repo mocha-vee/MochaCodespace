@@ -36,6 +36,12 @@ except ImportError:
 
 # Language configurations
 LANG_CONFIG = {
+    "PTX": {
+        "ext": ".ptx",
+        "sample": "examples/hello.ptx",
+        "comment": "// ",
+        "runner": "ptx"
+    },
     "Python": {
         "ext": ".py",
         "sample": "examples/hello.py",
@@ -130,6 +136,26 @@ LANG_CONFIG = {
 
 # Keywords and autocomplete suggestions for each language
 LANGUAGE_KEYWORDS = {
+    "PTX": [
+        "AL2P", "ALD", "AST", "B2R", "BFE", "BFI", "BMMA", "BMOV", "BMSK", "BREV",
+        "BRK", "CCTL", "CCTLL", "CCTLT", "CONT", "CS2R", "CSET", "CSETP", "DADD",
+        "DEPBAR", "DFMA", "DMMA", "DMNMX", "DMUL", "DSET", "DSETP", "F2F", "F2FP",
+        "F2I", "F2IP", "FADD", "FADD32I", "FCHK", "FCMP", "FFMA", "FFMA32I", "FLO",
+        "FMNMX", "FMUL", "FMUL32I", "FRND", "FSEL", "FSET", "FSETP", "FSWZADD",
+        "GETCRSPTR", "GETLMEMBASE", "HADD2", "HFMA2", "HMMA", "HMNMX2", "HMUL2",
+        "HSET2", "HSETP2", "I2F", "I2FP", "I2I", "I2IP", "IABS", "IADD", "IADD3",
+        "IADD32I", "ICMP", "IDE", "IDP", "IMAD", "IMAD32I", "IMADSP", "IMMA", "IMNMX",
+        "IMUL", "IMUL32I", "IPA", "ISBERD", "ISBEWR", "ISCADD", "ISCADD32I", "ISET", "ISETP",
+        "JCAL", "LDC", "LDGDEPBAR", "LDGSTS", "LEA", "LEPC", "LONGJMP", "LOP", "LOP3",
+        "LOP32I", "MATCH", "MOV", "MOV32I", "MOVM", "MUFU", "NOP", "OUT", "P2R", "PCNT",
+        "PEXIT", "PIXLD", "PLONGJMP", "PLOP3", "POPC", "PRMT", "PSET", "PSETP", "QSPC",
+        "R2B", "R2P", "R2UR", "RAM", "REDUX", "RRO", "RTT", "S2R", "S2UR", "SAM", "SEL",
+        "SETCRSPTR", "SETLMEMBASE", "SGXT", "SHF", "SHFL", "SHL", "SHR", "STP", "TLD4S",
+        "TLDS", "TMML", "TXA", "TXD", "TXQ", "UBREV", "UFLO", "UIADD3", "UIMAD", "UISETP",
+        "ULDC", "ULEA", "ULOP3", "UMOV", "UP2UR", "UPLOP3", "UPOPC", "UPRMT", "USEL",
+        "USGXT", "USHF", "VABSDIFF", "VABSDIFF4", "VADD", "VMAD", "VMNMX", "VOTE", "VOTEU",
+        "VSET", "VSETP", "VSHL", "VSHR", "XMAD"
+    ],
     "Python": [
         "and", "as", "assert", "async", "await", "break", "class", "continue",
         "def", "del", "elif", "else", "except", "False", "finally", "for",
@@ -230,6 +256,11 @@ LANGUAGE_KEYWORDS = {
 
 # Sample code templates
 SAMPLE_CODE = {
+    "PTX": """
+@P0 IMAD32I.U32.U32 R0, R0, 0x0, R0;
+@P0 FADD32I R0, R0, 0;
+@P0 LD.U8 R0, [R0];
+""",
     "Python": """#!/usr/bin/env python3
 \"\"\"
 Simple Python Hello World
@@ -1607,6 +1638,7 @@ class MochaCodespace(QMainWindow):
             </ul>
             <p><b>Supported Languages:</b></p>
             <ul>
+                <li>NVIDIA PTX</li>
                 <li>Python</li>
                 <li>Java</li>
                 <li>C / C++</li>
