@@ -33,6 +33,7 @@ Mocha Codespace supports **12+ programming languages** out of the box:
 | 🌐 HTML/CSS | `.html`, `.css` | Opened in default browser |
 | 🌙 Lua | `.lua` | Interpreted with Lua |
 | ❄️ Nix | `.nix` | Run with `nix-shell` |
+| 📎 PTX | `.ptx` | Run with `ptx` |
 
 ### 📝 Editor Features
 - **Auto-indentation**: Smart indenting based on code structure
