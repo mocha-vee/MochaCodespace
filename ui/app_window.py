@@ -290,7 +290,7 @@ class MochaCodespace(QMainWindow):
         QMessageBox.about(
             self,
             "About Mocha Codespace",
-            """<h2>Mocha Codespace 0.3</h2>
+            """<h2>Mocha Codespace 0.4</h2>
             <p>A modern, beginner-friendly IDE built with PyQt6/PySide6</p>
             <p><b>Features:</b></p>
             <ul>
@@ -315,7 +315,7 @@ class MochaCodespace(QMainWindow):
                 <li>Nix</li>
                 <li>Nvidia PTX</li>
             </ul>
-            <p>Created with ♥ by Camila Rose</p>
+            <p>Created with ♥ by The Mocha Foundation</p>
             <p>PyQt6/PySide6 Version</p>
             """
         )
